@@ -1,0 +1,44 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "boot-grid": [
+        "dist/boot-grid"
+      ],
+      "boot-grid/*": [
+        "dist/boot-grid/*"
+      ],
+      "vst-custom-popup": [
+        "dist/custom-popup/vst-custom-popup",
+        "dist/vst-custom-popup",
+        "dist/vst-custom-popup/vst-custom-popup",
+        "dist/vst-custom-popup"
+      ],
+      "vst-custom-kit": [
+        "dist/vst-custom-kit/vst-custom-kit",
+        "dist/vst-custom-kit"
+      ],
+      "custom-kit": [
+        "dist/custom-kit/custom-kit",
+        "dist/custom-kit"
+      ]
+    }
+  }
+}

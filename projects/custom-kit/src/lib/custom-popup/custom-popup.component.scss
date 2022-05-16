@@ -1,0 +1,48 @@
+// POUP STYLES
+.vst-custom-popup-container {
+    // popup escondida por default
+    display: none;
+    
+    &.visible {
+        display: block;
+    }
+
+    .vst-custom-popup {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+
+        /* z-index tem que ser maior que .vst-custom-popup-background */
+        z-index: 2000;
+        
+        /* scroll para-custom popup com alturas grandes */
+        overflow: auto;
+
+        .vst-custom-popup-body {
+            padding: 20px;
+            margin: 40px;
+            border-radius: 2px;
+
+            .vst-custom-popup-title {
+                color: #6b6a6a;
+                font-weight: bold;
+            }
+        }
+    }
+
+    .vst-custom-popup-background {
+        /* modal background fixed across whole screen */
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-color: #000;
+        opacity: 0.75;
+        
+        /* z-index tem que ser menor que .vst-custom-popup e maior que todos  */
+        z-index: 1900;
+    }
+}

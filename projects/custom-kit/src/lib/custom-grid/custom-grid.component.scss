@@ -1,0 +1,107 @@
+.custom-grid-container {
+    padding: 10px;
+    background-color: #fff;
+    border: solid #DEE2E6;
+    border-radius: 3px;
+    border-width: thin;
+
+    .main-table-content {
+        margin-bottom: 5px;
+    }
+
+    .search-container {
+        float: left;
+        margin-left: 7px;
+    }
+
+    .custom-border-right {
+        border-right: 1px solid #dee2e6;
+    }
+
+    .custom-border-left {
+        border-left: 1px solid #dee2e6;
+    }
+    
+    .custom-column-caption-row{
+        border-top-width: 0px !important;
+        
+        .custom-column-caption {
+            border-bottom: 1px solid rgb(129, 129, 129);
+            border-top: 1px solid rgb(129, 129, 129);
+            color: #6B6E74;
+            font-size: 14.2px;
+        }
+    }
+
+    .actions-column {
+        text-align: center;
+        width: 100px;
+    }
+
+    .custom-cell-value {
+        color: #6B6E74;
+        font-size: 13px;
+    }
+
+    .custom-grid-btn-add-content {
+        margin-bottom: 15px;
+        margin-right: 1px;
+        margin-left: 1px;
+        float: right;
+    }
+
+    .custom-col-action-btn {
+        color: #1475DF;
+        font-size: 15px;
+        cursor: pointer;
+        margin-right: 2px;
+        margin-left: 2px;
+
+        .custom-edit-cell-btn {
+            font-size: 16px;
+        }
+    }
+
+    .custom-col-action-btn:hover {
+        color: rgb(13, 67, 124);
+    }
+
+    .custom-data-empty {
+        // text-align: center;
+        color: #6B6E74;
+        font-size: 18px;
+        padding-top: 10px;
+    }
+
+    .custom-pagination-container {
+        margin-bottom: -10px;
+
+        .pagination-rows-per-page {
+            width: 60px;
+            cursor: pointer;
+        }
+
+        .page-item {
+            cursor: pointer;
+        }
+
+        .page-item-link {
+            color: #6B6E74;
+            cursor: pointer;
+        }
+
+        .page-item-link-active {
+            color: #fff !important;
+            cursor: pointer;
+        }
+
+        .div-selection-page {
+            margin-right: 5px;
+        }
+
+        .active {
+            background-color: #0B5ED7;
+            color: #fff;
+        }
+    }
+}

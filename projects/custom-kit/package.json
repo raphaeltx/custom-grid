@@ -1,0 +1,15 @@
+{
+  "name": "@vcx/vst-custom-kit",
+  "version": "1.0.1-beta.29",
+  "peerDependencies": {
+    "@angular/common": "^9.1.13",
+    "@angular/core": "^9.1.13",
+    "file-saver": "^2.0.2",
+    "xlsx": "^0.16.8",
+    "bootstrap": "^4.6.0",
+    "ngx-mask": "^8.1.0"
+  },
+  "dependencies": {
+    "tslib": "^1.10.0"
+  }
+}

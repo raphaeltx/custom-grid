@@ -1,0 +1,267 @@
+<div class="table-responsive custom-grid-container">
+    <div *ngIf="allowSearch" class="search-container">
+        <div class="input-group input-group-sm mb-3">
+            <input type="text" class="form-control" aria-label="Sizing example input"
+                aria-describedby="inputGroup-sizing-sm" placeholder="Pesquisar" [(ngModel)]="searchString">
+            <div class="input-group-append" id="button-addon4">
+                <button class="btn btn-outline-secondary btn-sm" type="button" (click)="search()">
+                    <i class="far fa-search"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="searchSettings()">
+                    <i class="far fa-filter"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="allowExporting" class="custom-grid-btn-add-content ml-1">
+        <button type="submit" class="btn btn-primary btn-sm" (click)="exportExcel($event)">
+            <i class="{{commandGridOptions.exportCommandClass}}"></i>
+        </button>
+    </div>
+
+    <div *ngIf="allowInserting" class="custom-grid-btn-add-content mr-1">
+        <button type="submit" class="btn btn-primary btn-sm" (click)="add($event)">
+            <i class="{{commandGridOptions.insertCommandClass}}"></i>
+        </button>
+    </div>
+
+    <div *ngFor="let item of customGridButtonList;" class="custom-grid-btn-add-content ml-1">
+        <button class="{{item.buttonClass}}" type="button" (click)="item.callback()">
+            {{item.label}} <i class="{{item.iconClass}}"></i>
+        </button>
+    </div>
+
+    <table class="table table-sm" [ngClass]="{ 'main-table-content': showPagination == false }">
+        <thead>
+            <tr class="custom-column-caption-row">
+                <th *ngIf="allowCollapseRow && dataSourceList.length > 0" class="custom-column-caption"></th>
+                <th *ngIf="showTotalFooter && dataSourceList.length > 0" class="custom-column-caption"></th>
+
+                <!-- títulos das colunas -->
+                <th *ngFor="let item of columns;" class="custom-column-caption"
+                    [ngClass]="{ 'text-center': item.columnType === 'command', 'custom-border-right': item.showRightBorder, 'custom-border-left': item.showLeftBorder }">
+                    {{item.caption}}
+                </th>
+
+                <!-- título da coluna de ações -->
+                <th *ngIf="allowUpdating || allowDeleting || allowViewing" class="custom-column-caption actions-column">
+                    {{customKitDomain.actions}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of dataSourceList; let ind = index;">
+                <td *ngIf="allowCollapseRow && dataSourceList.length > 0" class="custom-cell-value"></td>
+                <td *ngIf="showTotalFooter && dataSourceList.length > 0" class="custom-cell-value"></td>
+                <!-- valores das células -->
+                <td *ngFor="let col of columns; let colInd = index;" class="custom-cell-value"
+                    [ngClass]="{ 'text-center': col.columnType === 'command', 'border-right': col.showRightBorder, 'border-left': col.showLeftBorder }">
+
+                    <input *ngIf="onEditCellMode && rowSelected == ind && col.allowEdit && col.columnType == 'text'"
+                        id="cellInput" type="text" style="width: 100%"
+                        class="form-control form-control-sm cellInput{{ind}}"
+                        [ngModel]="item | gridCellValue : col.dataField"
+                        (ngModelChange)="cellModelCange($event, item, col.dataField)" (input)="teste($event, ind)" />
+
+                    <input *ngIf="onEditCellMode && rowSelected == ind && col.allowEdit && col.columnType == 'percent'"
+                        id="cellInput" type="text" style="width: 100%"
+                        class="form-control form-control-sm cellInput{{ind}}"
+                        [ngModel]="item | gridCellValue : col.dataField | number : '1.2-2'"
+                        (ngModelChange)="cellModelCange($event, item, col.dataField)" mask="separator.2"
+                        thousandSeparator="." separatorLimit="99999999999999" suffix="%" decimalMarker=","
+                        (input)="teste($event, ind)" />
+
+                    <div
+                        *ngIf="!onEditCellMode || (onEditCellMode && !col.allowEdit) || (onEditCellMode && rowSelected != ind)">
+                        <div *ngIf="col.columnType == 'text'">
+                            <div *ngIf="!col.mask || col.mask == undefined || col.mask == null">
+                                {{ item | gridCellValue : col.dataField }}
+                            </div>
+
+                            <div *ngIf="col.mask">
+                                {{ item | gridCellValue : col.dataField | mask : col.mask }}
+                            </div>
+                        </div>
+
+                        <div *ngIf="col.columnType == 'domain' && col.lookup && col.lookup.dataSource">
+                            {{ item | domainGridCellValue : col.dataField : col.lookup }}
+                        </div>
+
+                        <div *ngIf="col.columnType == 'date'">
+                            {{ item | gridCellValue : col.dataField | date : col.dateFormat }}
+                        </div>
+
+                        <div *ngIf="col.columnType == 'currency'">
+                            {{ item | gridCellValue : col.dataField | currencyConvertPipe }}
+                        </div>
+
+                        <div *ngIf="col.columnType == 'percent'">
+                            {{ item | gridCellValue : col.dataField | number :
+                            '1.2-2' }}%
+                        </div>
+
+                        <div *ngIf="col.columnType == 'command'">
+                            <a class="custom-link" (click)="col.customCommandClick(item)">
+                                <i class="{{col.customCommandIconClass}}"></i>
+                            </a>
+                        </div>
+                    </div>
+                </td>
+
+                <td *ngIf="allowUpdating || allowDeleting || allowViewing || allowCustomCommand" class="actions-column">
+                    <!-- link de edição -->
+                    <div *ngIf="allowUpdating && (!onEditCellMode || (onEditCellMode && rowSelected != ind))"
+                        class="d-inline mr-1 ml-1 custom-col-action-btn">
+                        <a class="custom-link" (click)="upd(item, ind, colInd)">
+                            <i class="{{commandGridOptions.updateCommandClass}}"></i>
+                        </a>
+                    </div>
+
+                    <!-- link de delete -->
+                    <div *ngIf="allowDeleting && (!onEditCellMode || (onEditCellMode && rowSelected != ind))"
+                        class="d-inline mr-1 ml-1 custom-col-action-btn">
+                        <a class="custom-link" (click)="del(item)">
+                            <i class="{{commandGridOptions.deleteCommandClass}}"></i>
+                        </a>
+                    </div>
+
+                    <!-- link de visualização -->
+                    <div *ngIf="allowViewing && (!onEditCellMode || (onEditCellMode && rowSelected != ind))"
+                        class="d-inline mr-1 ml-1 custom-col-action-btn">
+                        <a class="custom-link" (click)="view(item)">
+                            <i title="{{commandGridOptions.viewCommandTitle}}" class="{{commandGridOptions.viewCommandClass}}"></i>
+                        </a>
+                    </div>
+
+                    <div *ngIf="allowCustomCommand && (!onEditCellMode || (onEditCellMode && rowSelected != ind))">
+                        <div *ngFor="let el of customGridCommandList;" class="d-inline mr-1 ml-1 custom-col-action-btn">
+                            <a class="custom-link" (click)="el.callBack()">
+                                <i class="{{el.iconClass}}"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div *ngIf="onEditCellMode && rowSelected == ind" class="d-inline mr-1 ml-1 custom-col-action-btn">
+                        <a class="custom-link custom-edit-cell-btn" (click)="save(item, ind)">
+                            <i class="{{commandGridOptions.saveCommandClass}}"></i>
+                        </a>
+                    </div>
+
+                    <div *ngIf="onEditCellMode && rowSelected == ind" class="d-inline mr-1 ml-1 custom-col-action-btn">
+                        <a class="custom-link custom-edit-cell-btn" (click)="cancel(item)">
+                            <i class="{{commandGridOptions.cancelCommandClass}}"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+
+            <tr *ngIf="showTotalFooter && dataSourceList.length > 0">
+                <td *ngIf="allowCollapseRow && dataSourceList.length > 0" class="custom-cell-value"></td>
+                <td class="custom-cell-value"><strong>{{customKitDomain.total}}:</strong></td>
+
+                <td *ngFor="let item of totalFooterList; let ind = index;" class="custom-cell-value"
+                    [ngClass]="{ 'custom-border-right': item && item.showRightBorder, 'custom-border-left': item && item.showLeftBorder }">
+                    <ng-container *ngIf="item && item.showTotalFooterValue">
+                        <div *ngIf="item.columnType === 'currency'">
+                            <strong>{{item.sum | currencyConvertPipe}}</strong>
+                        </div>
+
+                        <div *ngIf="item.columnType !== 'currency'">
+                            <strong>{{item.sum}}</strong>
+                        </div>
+                    </ng-container>
+                </td>
+            </tr>
+
+            <tr *ngIf="dataSourceList.length === 0" class="custom-data-empty">
+                <td [attr.colspan]="columns.length + 1">
+                    <div class="mt-3 text-center">
+                        {{customKitDomain.gridDataSourceEmptyMsg}}
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div *ngIf="showPagination" class="custom-pagination-container">
+        <div class="d-inline-block float-left div-selection-page">
+            <select [(ngModel)]="loadDataSourceOptions.take" (ngModelChange)="onPageSizeChanged($event)"
+                class="form-control form-control-sm form-select form-select-sm pagination-rows-per-page">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="15">15</option>
+                <option [ngValue]="20">20</option>
+            </select>
+        </div>
+
+        <div class="d-inline-block">
+            <ul class="pagination pagination-sm w-50">
+                <li id="firstPage" *ngIf="paginationSettings.showFirstPage" class="custom-link">
+                    <a class="page-link page-item-link" [ngClass]="{ 'active' : 1 == _activePageIndex }"
+                        (click)="navigatePagination(1)">{{1}}</a>
+                </li>
+
+                <li *ngIf="paginationSettings.showFirstPage" class="m-2">
+                    ...
+                </li>
+
+                <li *ngFor="let item of paginationSettings.paginationItems; let ind = index" class="custom-link">
+                    <a class="page-link page-item-link" (click)="navigatePagination(item)"
+                        [ngClass]="{ 'active' : item == _activePageIndex }">{{item}}</a>
+                </li>
+
+                <li *ngIf="paginationSettings.showLastPage" class="m-2">
+                    ...
+                </li>
+
+                <li id="lastPage" *ngIf="paginationSettings.showLastPage" class="custom-link">
+                    <a class="page-link page-item-link"
+                        [ngClass]="{ 'active' : paginationSettings.lastPageNumber == _activePageIndex }"
+                        (click)="navigatePagination(paginationSettings.lastPageNumber)">{{paginationSettings.lastPageNumber}}</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<vst-custom-popup id="popup-grid-del-confirm" [width]="350" [closeOnOutsideClick]="false"
+    [title]="customKitDomain.confirmRemoveMsg" [showCloseButton]="false">
+    <div class="mt-3">
+        <div class="d-inline mr-2">
+            <button type="submit" class="btn btn-primary btn-sm" (click)="confirmDeleteRow()">
+                {{customKitDomain.yes}}
+            </button>
+        </div>
+
+        <div class="d-inline">
+            <button type="submit" class="btn btn-danger btn-sm" (click)="cancelDeleteRow()">
+                {{customKitDomain.no}}
+            </button>
+        </div>
+    </div>
+</vst-custom-popup>
+
+<vst-custom-popup id="popup-grid-search-settings" [width]="350" [closeOnOutsideClick]="false"
+    [title]="customKitDomain.columnSearched" [showCloseButton]="true">
+
+    <div class="column-select-container">
+        <form *ngIf="searchColumnChooserForm && searchColumnChooserFormArray" [formGroup]="searchColumnChooserForm"
+            (ngSubmit)="saveSettings()">
+            <div *ngFor="let order of searchColumnChooserFormArray.controls; let i = index">
+                <label formArrayName="columns">
+                    <input type="checkbox" [formControlName]="i">
+                    {{searchColumnsList[i].caption}}
+                </label>
+            </div>
+
+            <div class="mt-3">
+                <div class="d-inline mr-2">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        {{customKitDomain.save}}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</vst-custom-popup>
